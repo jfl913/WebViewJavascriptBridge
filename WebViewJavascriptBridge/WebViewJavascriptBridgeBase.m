@@ -98,14 +98,25 @@ static int logMaxLength = 500;
                 };
             }
             
-            WVJBHandler handler = self.messageHandlers[message[@"handlerName"]];
-            
-            if (!handler) {
-                NSLog(@"WVJBNoHandlerException, No handler for message from JS: %@", message);
+            NSString *handlerName = message[@"handlerName"];
+            if (handlerName.length == 0) {
+                NSLog(@"WVJBNoHandlerException, handlerName is empty.");
                 continue;
             }
             
-            handler(message[@"data"], responseCallback);
+            WVJBHandler handler;
+            handler = self.messageHandlers[handlerName];
+            if (handler) {
+                handler(message[@"data"], responseCallback);
+            } else if (self.messageHandler) {
+                handler = self.messageHandler;
+                NSMutableDictionary *dataDict = [NSMutableDictionary dictionaryWithDictionary:message[@"data"]];
+                dataDict[@"handlerName"] = handlerName;
+                handler(dataDict, responseCallback);
+            } else {
+                NSLog(@"WVJBNoHandlerException, No common handler for message from JS: %@", message);
+                continue;
+            }
         }
     }
 }

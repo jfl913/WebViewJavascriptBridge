@@ -34,6 +34,8 @@
 
 
 + (instancetype)bridgeForWebView:(id)webView;
+// 新增通用 handler 接口。
++ (instancetype)bridgeForWebView:(WKWebView *)webView handler:(WVJBHandler)handler;
 + (instancetype)bridge:(id)webView;
 
 + (void)enableLogging;

@@ -18,6 +18,9 @@
 @interface WKWebViewJavascriptBridge : NSObject<WKNavigationDelegate, WebViewJavascriptBridgeBaseDelegate>
 
 + (instancetype)bridgeForWebView:(WKWebView*)webView;
+// 新增通用 handler 接口。
++ (instancetype)bridgeForWebView:(WKWebView *)webView handler:(WVJBHandler)handler;
+
 + (void)enableLogging;
 
 - (void)registerHandler:(NSString*)handlerName handler:(WVJBHandler)handler;

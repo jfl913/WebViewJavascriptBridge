@@ -29,6 +29,14 @@
     return bridge;
 }
 
+// 新增通用 handler 接口。
++ (instancetype)bridgeForWebView:(WKWebView *)webView handler:(WVJBHandler)handler {
+    WKWebViewJavascriptBridge* bridge = [[self alloc] init];
+    [bridge _setupInstance:webView handler:handler];
+    [bridge reset];
+    return bridge;
+}
+
 - (void)send:(id)data {
     [self send:data responseCallback:nil];
 }
@@ -90,6 +98,14 @@
     _base.delegate = self;
 }
 
+// 新增通用 handler 参数。
+- (void) _setupInstance:(WKWebView*)webView handler:(WVJBHandler)handler {
+    _webView = webView;
+    _webView.navigationDelegate = self;
+    _base = [[WebViewJavascriptBridgeBase alloc] init];
+    _base.delegate = self;
+    _base.messageHandler = handler;
+}
 
 - (void)WKFlushMessageQueue {
     [_webView evaluateJavaScript:[_base webViewJavascriptFetchQueyCommand] completionHandler:^(NSString* result, NSError* error) {

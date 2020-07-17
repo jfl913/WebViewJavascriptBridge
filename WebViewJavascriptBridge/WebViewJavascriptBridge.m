@@ -38,6 +38,23 @@
 + (instancetype)bridgeForWebView:(id)webView {
     return [self bridge:webView];
 }
+
+// 新增通用 handler 接口。
++ (instancetype)bridgeForWebView:(WKWebView *)webView handler:(WVJBHandler)handler {
+    #if defined supportsWKWebView
+        if ([webView isKindOfClass:[WKWebView class]]) {
+            return (WebViewJavascriptBridge*) [WKWebViewJavascriptBridge bridgeForWebView:webView handler:handler];
+        }
+    #endif
+        if ([webView isKindOfClass:[WVJB_WEBVIEW_TYPE class]]) {
+            WebViewJavascriptBridge* bridge = [[self alloc] init];
+            [bridge _platformSpecificSetup:webView handler:handler];
+            return bridge;
+        }
+        [NSException raise:@"BadWebViewType" format:@"Unknown web view type."];
+        return nil;
+}
+
 + (instancetype)bridge:(id)webView {
 #if defined supportsWKWebView
     if ([webView isKindOfClass:[WKWebView class]]) {
@@ -151,6 +168,15 @@
     _webView.delegate = self;
     _base = [[WebViewJavascriptBridgeBase alloc] init];
     _base.delegate = self;
+}
+
+// 增加通用 handler。
+- (void) _platformSpecificSetup:(WVJB_WEBVIEW_TYPE*)webView handler:(WVJBHandler)handler {
+    _webView = webView;
+    _webView.delegate = self;
+    _base = [[WebViewJavascriptBridgeBase alloc] init];
+    _base.delegate = self;
+    _base.messageHandler = handler;
 }
 
 - (void) _platformSpecificDealloc {
