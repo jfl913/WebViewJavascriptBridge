@@ -110,8 +110,9 @@ static int logMaxLength = 500;
                 handler(message[@"data"], responseCallback);
             } else if (self.messageHandler) {
                 handler = self.messageHandler;
-                NSMutableDictionary *dataDict = [NSMutableDictionary dictionaryWithDictionary:message[@"data"]];
+                NSMutableDictionary *dataDict = @{}.mutableCopy;
                 dataDict[@"handlerName"] = handlerName;
+                dataDict[@"data"] = message[@"data"];
                 handler(dataDict, responseCallback);
             } else {
                 NSLog(@"WVJBNoHandlerException, No common handler for message from JS: %@", message);
